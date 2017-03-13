@@ -13,12 +13,14 @@ import com.rabbitmq.client.Consumer;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ManagerRabbitMQ {
 
     protected Channel mChannel = null;
     protected Connection mConnection;
-    private static final String EXCHANGE_NAME = "sabuga.chat";
+    private static final String EXCHANGE_NAME = Constants.MQ_EXCHANGE_NAME;
     private static final String ACTION_STRING_ACTIVITY = "broadcast_event";
 
 
@@ -77,7 +79,8 @@ public class ManagerRabbitMQ {
                     mConnection = connectionFactory.newConnection();
                     mChannel = mConnection.createChannel();
                     Log.i("Connect To host", "connected");
-                    registerChanelHost();
+                    //registerChanelHost();
+                    subscribe();
 
 
 
@@ -100,33 +103,37 @@ public class ManagerRabbitMQ {
     }
 
 
-    private void registerChanelHost(){
-
-        try{
-
-            mChannel.exchangeDeclare(EXCHANGE_NAME, "fanout", true);
-
-            final String queueName = mChannel.queueDeclare().getQueue();
-            mChannel.queueBind(queueName, EXCHANGE_NAME, "");
-
-            Consumer consumer = new DefaultConsumer(mChannel) {
-                @Override
-                public void handleDelivery(String consumerTag, Envelope envelope,
-                                           AMQP.BasicProperties properties, byte[] body) throws IOException {
-
-                    String message = new String(body, "UTF-8");
-                    sendBroadcast(message);
-
-
-                }
-            };
-
-            mChannel.basicConsume(queueName, true, consumer);
-
-        } catch (Exception e){
+    static final ExecutorService threadPool;
+    static {
+        threadPool = Executors.newCachedThreadPool();
+    }
+    private void subscribe(){
+        try {
+            try {
+                mChannel.exchangeDeclare(EXCHANGE_NAME, "fanout", false);
+                String queueName = mChannel.queueDeclare("", false, true, false, null).getQueue();
+                mChannel.queueBind(queueName, EXCHANGE_NAME, "");
+                mChannel.basicConsume("", true, new DefaultConsumer(mChannel) {
+                    @Override
+                    public void handleDelivery(String consumerTag, Envelope envelope, final AMQP.BasicProperties properties, byte[] body) throws IOException {
+                        final String message = new String(body, "UTF-8");
+                        Runnable runnable = new Runnable() {
+                            @Override
+                            public void run() {
+                                sendBroadcast(message);
+                            }
+                        };
+                        threadPool.submit(runnable);
+                    }
+                });
+            }catch (IllegalStateException e){
+                e.printStackTrace();
+            }
+        }catch (IOException e){
             e.printStackTrace();
         }
     }
+
 
     private void sendBroadcast(String msg) {
         Intent intent = new Intent(ACTION_STRING_ACTIVITY);
