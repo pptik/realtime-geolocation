@@ -18,6 +18,7 @@ public class ListAdapter extends BaseAdapter {
     private Tracker[] trackers;
     private LayoutInflater mInflater = null;
     private TextView gpsNameText;
+    private int checkedState;
 
     public interface MarkerPositionListener{
         public void onMarkerSelected(int position);
@@ -25,11 +26,12 @@ public class ListAdapter extends BaseAdapter {
 
 
     MarkerPositionListener listener;
-    public ListAdapter(Context mContext, Tracker[] trackers, MarkerPositionListener listener){
+    public ListAdapter(Context mContext, Tracker[] trackers, int checkedState, MarkerPositionListener listener){
         this.mContext = mContext;
         this.trackers = trackers;
         this.mInflater = (LayoutInflater)this.mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.listener = listener;
+        this.checkedState = checkedState;
     }
 
 
@@ -60,7 +62,8 @@ public class ListAdapter extends BaseAdapter {
 
         view = mInflater.inflate(R.layout.list_item, null);
         gpsNameText = (TextView)view.findViewById(R.id.gps_name);
-        gpsNameText.setText(trackers[i].getKeterangan());
+        String info = (i == checkedState) ? trackers[i].getKeterangan()+" [checked]" : trackers[i].getKeterangan();
+        gpsNameText.setText(info);
 
         view.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements ListAdapter.Marke
     private boolean isFirsInit = true;
     private ListView listView;
     private ListAdapter adapter;
+    private int checkedState = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements ListAdapter.Marke
 
     private void setListView() {
 
-        adapter = new ListAdapter(context, trackers, this);
+        adapter = new ListAdapter(context, trackers, checkedState, this);
         listView.setAdapter(adapter);
     }
 
@@ -170,5 +171,7 @@ public class MainActivity extends AppCompatActivity implements ListAdapter.Marke
     @Override
     public void onMarkerSelected(int position) {
         Log.i("Pos", String.valueOf(position));
+        checkedState = position;
+        setListView();
     }
 }
