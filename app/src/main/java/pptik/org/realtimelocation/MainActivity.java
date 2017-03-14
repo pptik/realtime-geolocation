@@ -113,6 +113,7 @@ public class MainActivity extends AppCompatActivity {
                                             markers[i].setTitle(info);
                                             markers[i].setRelatedObject(trackers[i]);
                                             markers[i].setRotation((float) bearing);
+
                                           //  animateMarker(markers[i], markers[i].getPosition());
                                         }else {
                                             // same position
