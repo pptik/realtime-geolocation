@@ -98,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
                     }else {
                         Log.i("Test", "Update");
                         requestStatus= new Gson().fromJson(message, RequestStatus.class);
+                        OSMarkerAnimation markerAnimation = new OSMarkerAnimation();
                         if(requestStatus.getSuccess()){
                             if(jsonArray.length() == trackers.length){
                                 for(int i = 0; i < jsonArray.length(); i++){
@@ -108,19 +109,22 @@ public class MainActivity extends AppCompatActivity {
                                                 markers[i].getPosition().getLongitude() != trackers[i].getData().get(1)) {
                                             double bearing = bearing(markers[i].getPosition().getLatitude(), markers[i].getPosition().getLongitude(),
                                                     trackers[i].getData().get(0), trackers[i].getData().get(1));
-                                            markers[i].setPosition(new GeoPoint(trackers[i].getData().get(0), trackers[i].getData().get(1)));
+                                        //    markers[i].setPosition(new GeoPoint(trackers[i].getData().get(0), trackers[i].getData().get(1)));
                                             String info = trackers[i].getLokasi()+"\n"+trackers[i].getKeterangan()+"\nLokasi Tanggal : "+trackers[i].getDate()+"\nKecepatan : "+trackers[i].getSpeed()+" KM/H";
                                             markers[i].setTitle(info);
                                             markers[i].setRelatedObject(trackers[i]);
                                             markers[i].setRotation((float) bearing);
 
+                                            markerAnimation.animate(mapset, markers[i],
+                                                    new GeoPoint(trackers[i].getData().get(0), trackers[i].getData().get(1)),
+                                                    1500);
                                           //  animateMarker(markers[i], markers[i].getPosition());
                                         }else {
                                             // same position
                                         }
                                     }
                                 }
-                                mapset.invalidate();
+                                //mapset.invalidate();
                             }else {
                                 // found new data
                             }
