@@ -88,7 +88,8 @@ public class MainActivity extends AppCompatActivity {
                             markers[i].setPosition(new GeoPoint(trackers[i].getData().get(0), trackers[i].getData().get(1)));
                             markers[i].setImage(getResources().getDrawable(R.drawable.car));
                             markers[i].setIcon(getResources().getDrawable(R.drawable.car));
-                            markers[i].setTitle(trackers[i].getLokasi()+"\n"+trackers[i].getKeterangan());
+                            String info = trackers[i].getLokasi()+"\n"+trackers[i].getKeterangan()+"\nLokasi Tanggal : "+trackers[i].getDate()+"\nKecepatan : "+trackers[i].getSpeed()+" KM/H";
+                            markers[i].setTitle(info);
                             markers[i].setRelatedObject(trackers[i]);
                             mapset.getOverlays().add(markers[i]);
                         }
@@ -108,7 +109,8 @@ public class MainActivity extends AppCompatActivity {
                                             double bearing = bearing(markers[i].getPosition().getLatitude(), markers[i].getPosition().getLongitude(),
                                                     trackers[i].getData().get(0), trackers[i].getData().get(1));
                                             markers[i].setPosition(new GeoPoint(trackers[i].getData().get(0), trackers[i].getData().get(1)));
-                                            markers[i].setTitle(trackers[i].getLokasi() + "\n" + trackers[i].getKeterangan());
+                                            String info = trackers[i].getLokasi()+"\n"+trackers[i].getKeterangan()+"\nLokasi Tanggal : "+trackers[i].getDate()+"\nKecepatan : "+trackers[i].getSpeed()+" KM/H";
+                                            markers[i].setTitle(info);
                                             markers[i].setRelatedObject(trackers[i]);
                                             markers[i].setRotation((float) bearing);
                                           //  animateMarker(markers[i], markers[i].getPosition());
@@ -131,29 +133,6 @@ public class MainActivity extends AppCompatActivity {
     };
 
 
-    private void animateMarker(final Marker marker, final GeoPoint toPosition) {
-        final Handler handler = new Handler();
-        final long start = SystemClock.uptimeMillis();
-        Projection proj = mapset.getProjection();
-        Point startPoint = proj.toPixels(marker.getPosition(), null);
-        final IGeoPoint startGeoPoint = proj.fromPixels(startPoint.x, startPoint.y);
-        final long duration = 1500;
-        final Interpolator interpolator = new LinearInterpolator();
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                long elapsed = SystemClock.uptimeMillis() - start;
-                float t = interpolator.getInterpolation((float) elapsed / duration);
-                double lng = t * toPosition.getLongitude() + (1 - t) * startGeoPoint.getLongitude();
-                double lat = t * toPosition.getLatitude() + (1 - t) * startGeoPoint.getLatitude();
-                marker.setPosition(new GeoPoint(lat, lng));
-                if (t < 1.0) {
-                    handler.postDelayed(this, 15);
-                }
-                mapset.postInvalidate();
-            }
-        });
-    }
 
     protected static double bearing(double lat1, double lon1, double lat2, double lon2){
         double longitude1 = lon1;
