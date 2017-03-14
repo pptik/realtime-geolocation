@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.CompoundButton;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import pptik.org.realtimelocation.R;
@@ -18,6 +20,7 @@ public class ListAdapter extends BaseAdapter {
     private Tracker[] trackers;
     private LayoutInflater mInflater = null;
     private TextView gpsNameText;
+    private RadioButton stateRadio;
     private int checkedState;
 
     public interface MarkerPositionListener{
@@ -62,14 +65,26 @@ public class ListAdapter extends BaseAdapter {
 
         view = mInflater.inflate(R.layout.list_item, null);
         gpsNameText = (TextView)view.findViewById(R.id.gps_name);
-        String info = (i == checkedState) ? trackers[i].getKeterangan()+" [checked]" : trackers[i].getKeterangan();
+        stateRadio = (RadioButton)view.findViewById(R.id.state);
+
+        boolean state = (i == checkedState) ? true : false;
+        String info = trackers[i].getKeterangan();
+
         gpsNameText.setText(info);
+        stateRadio.setChecked(state);
 
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                listener.onMarkerSelected(i);
+                //listener.onMarkerSelected(i);
 
+            }
+        });
+
+        stateRadio.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                listener.onMarkerSelected(i);
             }
         });
 
