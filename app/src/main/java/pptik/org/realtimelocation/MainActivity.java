@@ -5,11 +5,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.View;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 
 
 import com.google.gson.Gson;
@@ -43,6 +46,8 @@ public class MainActivity extends AppCompatActivity implements ListAdapter.Marke
     private ListView listView;
     private ListAdapter adapter;
     private int checkedState = 0;
+    private RelativeLayout sortLayout;
+    private FloatingActionButton sortFab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +58,8 @@ public class MainActivity extends AppCompatActivity implements ListAdapter.Marke
 
         mapset = (MapView)findViewById(R.id.maposm);
         listView = (ListView)findViewById(R.id.listView);
+        sortLayout = (RelativeLayout)findViewById(R.id.sortLayout);
+        sortFab = (FloatingActionButton)findViewById(R.id.sort_fab);
 
         context = this;
         mapset.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE);
@@ -66,12 +73,21 @@ public class MainActivity extends AppCompatActivity implements ListAdapter.Marke
 
         manage = new ManagerRabbitMQ(MainActivity.this);
         manage.connectToRabbitMQ();
+
+        sortFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(sortLayout.getVisibility() == View.GONE){
+                    sortLayout.setVisibility(View.VISIBLE);
+                }else sortLayout.setVisibility(View.GONE);
+            }
+        });
     }
 
 
     private void setListView() {
 
-        adapter = new ListAdapter(context, trackers, checkedState, this);
+        adapter = new ListAdapter(context, trackers, checkedState, sortLayout, this);
         listView.setAdapter(adapter);
     }
 
@@ -104,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements ListAdapter.Marke
                             mapset.getOverlays().add(markers[i]);
                         }
                         setListView();
-                        mapController.animateTo(markers[0].getPosition());
+                        animateToSelected();
 
                     }else {
                         Log.i("Test", "Update");
@@ -134,6 +150,7 @@ public class MainActivity extends AppCompatActivity implements ListAdapter.Marke
                                     }
                                 }
                                 setListView();
+                                animateToSelected();
 
                             }else {
                                 // found new data
@@ -173,5 +190,10 @@ public class MainActivity extends AppCompatActivity implements ListAdapter.Marke
         Log.i("Pos", String.valueOf(position));
         checkedState = position;
         setListView();
+        animateToSelected();
+    }
+
+    private void animateToSelected(){
+        mapController.animateTo(markers[checkedState].getPosition());
     }
 }

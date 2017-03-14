@@ -14,14 +14,31 @@
         android:layout_width="fill_parent"
         android:layout_height="match_parent"
         />
-    <ListView
-        android:id="@+id/listView"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:cacheColorHint="#00000000"
-        android:divider="@color/colorPrimaryDark"
-        android:dividerHeight="2dp"
-        android:background="#fff"
-        android:scrollbars="none" >
-    </ListView>
+        android:id="@+id/sortLayout"
+        android:visibility="gone"
+        android:layout_height="match_parent">
+        <TextView
+            android:background="@color/colorAccent"
+            android:layout_width="match_parent"
+            android:padding="10dp"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textColor="#fff"
+            android:text="Klik untuk fokus pada salah satu Tujuan"
+            android:id="@+id/help"
+            />
+        <ListView
+            android:layout_below="@id/help"
+            android:id="@+id/listView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:cacheColorHint="#00000000"
+            android:divider="@color/colorPrimaryDark"
+            android:dividerHeight="1dp"
+            android:background="#fff"
+            android:scrollbars="none" >
+        </ListView>
+    </RelativeLayout>
 </RelativeLayout>
