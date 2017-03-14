@@ -9,9 +9,11 @@ import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.Consumer;
 import com.rabbitmq.client.DefaultConsumer;
 import com.rabbitmq.client.Envelope;
+import com.rabbitmq.client.ShutdownListener;
+import com.rabbitmq.client.ShutdownSignalException;
+
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -73,11 +75,18 @@ public class ManagerRabbitMQ {
                     connectionFactory.setPassword(password);
                     connectionFactory.setVirtualHost(virtualHost);
                     connectionFactory.setHost(serverIp);
+                    connectionFactory.setRequestedHeartbeat(10);
                     connectionFactory.setPort(port);
                     connectionFactory.setAutomaticRecoveryEnabled(true);
 
                     mConnection = connectionFactory.newConnection();
                     mChannel = mConnection.createChannel();
+                    mChannel.addShutdownListener(new ShutdownListener() {
+                        @Override
+                        public void shutdownCompleted(ShutdownSignalException cause) {
+                            Log.i("close ", cause.getMessage());
+                        }
+                    });
                     Log.i("Connect To host", "connected");
                     //registerChanelHost();
                     subscribe();
