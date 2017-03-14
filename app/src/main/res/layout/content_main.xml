@@ -21,7 +21,7 @@
         android:cacheColorHint="#00000000"
         android:divider="@color/colorPrimaryDark"
         android:dividerHeight="2dp"
-        android:layout_marginBottom="?attr/actionBarSize"
+        android:background="#fff"
         android:scrollbars="none" >
     </ListView>
 </RelativeLayout>

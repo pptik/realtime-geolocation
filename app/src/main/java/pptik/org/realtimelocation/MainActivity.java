@@ -29,7 +29,7 @@ import pptik.org.realtimelocation.adapter.ListAdapter;
 import pptik.org.realtimelocation.models.RequestStatus;
 import pptik.org.realtimelocation.models.Tracker;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ListAdapter.MarkerPositionListener {
 
     private MapView mapset;
     private Context context;
@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setListView() {
 
-        adapter = new ListAdapter(context, trackers);
+        adapter = new ListAdapter(context, trackers, this);
         listView.setAdapter(adapter);
     }
 
@@ -167,4 +167,8 @@ public class MainActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
+    @Override
+    public void onMarkerSelected(int position) {
+        Log.i("Pos", String.valueOf(position));
+    }
 }

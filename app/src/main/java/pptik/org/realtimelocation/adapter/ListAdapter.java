@@ -3,7 +3,6 @@ package pptik.org.realtimelocation.adapter;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,10 +19,17 @@ public class ListAdapter extends BaseAdapter {
     private LayoutInflater mInflater = null;
     private TextView gpsNameText;
 
-    public ListAdapter(Context mContext, Tracker[] trackers){
+    public interface MarkerPositionListener{
+        public void onMarkerSelected(int position);
+    }
+
+
+    MarkerPositionListener listener;
+    public ListAdapter(Context mContext, Tracker[] trackers, MarkerPositionListener listener){
         this.mContext = mContext;
         this.trackers = trackers;
         this.mInflater = (LayoutInflater)this.mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.listener = listener;
     }
 
 
@@ -59,7 +65,8 @@ public class ListAdapter extends BaseAdapter {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.i("Shit", trackers[i].getMac());
+                listener.onMarkerSelected(i);
+
             }
         });
 
