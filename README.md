@@ -63,3 +63,7 @@ Menampilkan lokasi dari GPS-Tracker device yang dipasang dikendaraan pada OSMDro
 ![alt tag](https://github.com/pptik/realtime-geolocation/blob/master/01.gif?raw=true)
 
 ![alt tag](https://github.com/pptik/realtime-geolocation/blob/master/02.gif?raw=true)
+
+![alt tag](https://github.com/pptik/realtime-geolocation/blob/master/Screenshot_2017-03-15-00-08-30.jpg?raw=true)
+
+![alt tag](https://github.com/pptik/realtime-geolocation/blob/master/Screenshot_2017-03-15-00-08-26.jpg?raw=true)
