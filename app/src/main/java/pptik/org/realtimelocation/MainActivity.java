@@ -4,30 +4,28 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Point;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.SystemClock;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.animation.Interpolator;
-import android.view.animation.LinearInterpolator;
+import android.widget.ListView;
+
 
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
-import org.osmdroid.views.Projection;
 import org.osmdroid.views.overlay.Marker;
 
+import java.util.ArrayList;
+
+import pptik.org.realtimelocation.adapter.ListAdapter;
 import pptik.org.realtimelocation.models.RequestStatus;
 import pptik.org.realtimelocation.models.Tracker;
 
@@ -42,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
     private String[] trackerMacs;
     private Marker[] markers;
     private boolean isFirsInit = true;
+    private ListView listView;
+    private ListAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         mapset = (MapView)findViewById(R.id.maposm);
+        listView = (ListView)findViewById(R.id.listView);
+
         context = this;
         mapset.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE);
         mapset.setMultiTouchControls(true);
@@ -63,6 +65,13 @@ public class MainActivity extends AppCompatActivity {
 
         manage = new ManagerRabbitMQ(MainActivity.this);
         manage.connectToRabbitMQ();
+    }
+
+
+    private void setListView() {
+
+        adapter = new ListAdapter(context, trackers);
+        listView.setAdapter(adapter);
     }
 
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
@@ -93,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
                             markers[i].setRelatedObject(trackers[i]);
                             mapset.getOverlays().add(markers[i]);
                         }
+                        setListView();
                         mapController.animateTo(markers[0].getPosition());
 
                     }else {
@@ -109,7 +119,6 @@ public class MainActivity extends AppCompatActivity {
                                                 markers[i].getPosition().getLongitude() != trackers[i].getData().get(1)) {
                                             double bearing = bearing(markers[i].getPosition().getLatitude(), markers[i].getPosition().getLongitude(),
                                                     trackers[i].getData().get(0), trackers[i].getData().get(1));
-                                        //    markers[i].setPosition(new GeoPoint(trackers[i].getData().get(0), trackers[i].getData().get(1)));
                                             String info = trackers[i].getLokasi()+"\n"+trackers[i].getKeterangan()+"\nLokasi Tanggal : "+trackers[i].getDate()+"\nKecepatan : "+trackers[i].getSpeed()+" KM/H";
                                             markers[i].setTitle(info);
                                             markers[i].setRelatedObject(trackers[i]);
@@ -118,13 +127,13 @@ public class MainActivity extends AppCompatActivity {
                                             markerAnimation.animate(mapset, markers[i],
                                                     new GeoPoint(trackers[i].getData().get(0), trackers[i].getData().get(1)),
                                                     1500);
-                                          //  animateMarker(markers[i], markers[i].getPosition());
                                         }else {
                                             // same position
                                         }
                                     }
                                 }
-                                //mapset.invalidate();
+                                setListView();
+
                             }else {
                                 // found new data
                             }
